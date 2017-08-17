@@ -99,6 +99,45 @@ function albumname($fb)
 }
 
 ?>
+
+
+
+
+
+ <?php  
+// function imageprocess()
+//  {
+//  	# code...
+//  }
+//         foreach ( $data1['albums'] as $key ) {
+          
+//           echo '
+//             <div class="profile-albums">
+//               <h2> '.$key['name'].'</h2>
+//               <hr>
+//               <div class="row">
+                
+
+//                  ';
+//                	$id=$key['id'];
+//                   $response = $fb->get('/'.$id.'/photos/?fields=source,name,image',$token);
+//                   $data2=$response->getGraphEdge();
+//                   foreach ($data2 as $key) {
+
+//                   	$imageurl[$i]=$key['source'];
+//                   	$i++;
+//                     // echo '<div class="col-md-4"> <img src="'.$key['source'].'">
+//                     // </div>';
+//                 }
+//                 echo ";
+//               </div>
+//             </div>";
+//	          }
+          ?>
+
+
+
+
 <?php 
 
 function creatdir($name){
@@ -141,7 +180,7 @@ function downloader($access,$id,$data)
 
 
 
-	$url="Zipfiles/".$access.".zip";
+	$url="Zips/".$access.".zip";
 	echo"<a href='". $url."' download>Download Zip</a>";
 
 
@@ -181,11 +220,16 @@ class FlxZipArchive extends ZipArchive
         $do = (filetype( $location . $file) == 'dir') ? 'addDir' : 'addFile';
         $this->$do($location . $file, $name . $file);
     	// echo "adding dir".$i++;
+
     }
+
  } 
 }
 ?>
+
 <?php
+
+
 function zipfolder($dir)
 {
 $the_folder = $dir;
@@ -201,5 +245,12 @@ if($res === TRUE)
 else{
 echo 'Could not create a zip archive';
 }
+
+
+
+
+
 }
+
+
  ?>
