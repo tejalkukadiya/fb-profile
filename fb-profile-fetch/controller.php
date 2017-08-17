@@ -99,46 +99,8 @@ function albumname($fb)
 }
 
 ?>
-
-
-
-
-
- <?php  
-// function imageprocess()
-//  {
-//  	# code...
-//  }
-//         foreach ( $data1['albums'] as $key ) {
-          
-//           echo '
-//             <div class="profile-albums">
-//               <h2> '.$key['name'].'</h2>
-//               <hr>
-//               <div class="row">
-                
-
-//                  ';
-//                	$id=$key['id'];
-//                   $response = $fb->get('/'.$id.'/photos/?fields=source,name,image',$token);
-//                   $data2=$response->getGraphEdge();
-//                   foreach ($data2 as $key) {
-
-//                   	$imageurl[$i]=$key['source'];
-//                   	$i++;
-//                     // echo '<div class="col-md-4"> <img src="'.$key['source'].'">
-//                     // </div>';
-//                 }
-//                 echo ";
-//               </div>
-//             </div>";
-//	          }
-          ?>
-
-
-
-
 <?php 
+
 function creatdir($name){
 	if (file_exists($name)){
 		
@@ -167,13 +129,20 @@ function downloader($access,$id,$data)
 	}
 	if (file_exists($album)) {
 		echo $album .'is there';
+	chdir("../");
 	}else{
 		creatdir($album);
-	}
-
-	echo "Saving images";
 	saveImages($data);
-	// chdir(__.DIR.__);
+	chdir("../../");
+	}
+	
+	// mkdir("test");
+	zipfolder($access);
+
+
+
+	$url="Zipfiles/".$access.".zip";
+	echo"<a href='". $url."' download>Download Zip</a>";
 
 
 }
@@ -192,4 +161,45 @@ function downloader($access,$id,$data)
 	}
 }
 
+
+class FlxZipArchive extends ZipArchive 
+{
+ public function addDir($location, $name) 
+ {
+       $this->addEmptyDir($name);
+       $this->addDirDo($location, $name);
+ } 
+ private function addDirDo($location, $name) 
+ {
+    $name .= '/';
+    $location .= '/';
+    $dir = opendir ($location);
+    $i=0;
+    while ($file = readdir($dir))
+    {
+        if ($file == '.' || $file == '..') continue;
+        $do = (filetype( $location . $file) == 'dir') ? 'addDir' : 'addFile';
+        $this->$do($location . $file, $name . $file);
+    	// echo "adding dir".$i++;
+    }
+ } 
+}
+?>
+<?php
+function zipfolder($dir)
+{
+$the_folder = $dir;
+$zip_file_name = 'Zipfiles/'.$dir.'.zip';
+$za = new FlxZipArchive;
+$res = $za->open($zip_file_name, ZipArchive::CREATE);
+if($res === TRUE) 
+{
+    $za->addDir($the_folder, basename($the_folder));
+    $za->close();
+
+}
+else{
+echo 'Could not create a zip archive';
+}
+}
  ?>
