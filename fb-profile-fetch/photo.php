@@ -40,7 +40,7 @@ function downloader($access,$id,$data)
 
 
 
-	$url="Zipfiles/".$access.".zip";
+	$url="Zips/".$access.".zip";
 	echo"<a href='". $url."' download>Download Zip</a>";
 
 
@@ -93,7 +93,7 @@ class FlxZipArchive extends ZipArchive
 function zipfolder($dir)
 {
 $the_folder = $dir;
-$zip_file_name = 'Zipfiles/'.$dir.'.zip';
+$zip_file_name = 'Zips/'.$dir.'.zip';
 $za = new FlxZipArchive;
 $res = $za->open($zip_file_name, ZipArchive::CREATE);
 if($res === TRUE) 

@@ -71,7 +71,7 @@ echo $_SESSION['fb_access_token'];
 }
 
 $permissions = ['email','user_photos']; // Optional permissions
-$loginUrl = $helper->getLoginUrl('http://localhost/facebook_login_with_php/', $permissions);
+$loginUrl = $helper->getLoginUrl('http://localhost/rtcamp/fb-profile-fetch/fb-profile-fetch/', $permissions);
 
 ?>
     <div class="container main">

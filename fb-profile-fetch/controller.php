@@ -9,6 +9,7 @@ if (!session_id()) {
 
 set_time_limit(0);
 require_once __DIR__.'/vendor/autoload.php';
+require_once 'photo.php';
 $fb = new Facebook\Facebook([
   'app_id' => '1622173214524006', 
   'app_secret' => '2a271598a2e13b4b966b9fd36f78630d',
@@ -36,6 +37,9 @@ catch(Facebook\Exceptions\FacebookResponseException $e) {
 $fb->setDefaultAccesstoken($_SESSION['fb_access_token']);
 // $token=$_SESSION[]
 
+
+
+
 if (isset($_REQUEST['load'])) {
 	albumname($fb);
 	// echo "string";
@@ -43,31 +47,40 @@ if (isset($_REQUEST['load'])) {
 
 
 if (isset($_REQUEST['down'])) {
+$access=$_SESSION['fb_access_token'];
+	echo "Processing";
 
-	echo "<p>Processing</p>";
-	foreach ($_REQUEST['albums'] as $key) {
-			// var_dump($_REQUEST)	;
-			$response = $fb->get('/'.$key.'/photos/?fields=source,name',$_SESSION['fb_access_token']);
 
-					$i=0;
-                  $data2=$response->getGraphEdge();
-                    foreach ($data2 as $key1) {
+    foreach ($_REQUEST['albums'] as $key) {
+            downloadAlbum($fb,$access,$key);
 
-                  	$imageurl[$i]=$key1['source'];
-                  	$i++;
-                    // echo '<div class="col-md-4"> <img src="'.$key['source'].'">
-                    // </div>';
-                }
+    }
 		# code...
-                // echo "Processong";
-	downloader($_SESSION['fb_access_token'],$key,$imageurl);
+
+	//downloader($token,$key,$imageurl);
 	}
 
 
 	// echo "string";
+// }
+
+function downloadAlbum($fb,$access,$id){
+  $response=$fb->get('/'.$id.'/photos?fields=source,name');
+  $graphObject = $response->getGraphEdge();
+
+          $i=0;
+          $fbPhotoObj = json_decode($graphObject, true);
+          foreach ($fbPhotoObj as $k) {
+           
+            $imageurl= $k['source'];
+            // echo '<img src="'.$imageurl.'"><br>';
+            $data1[$i]=$imageurl;
+            // saveImages($imageurl);}
+            $i++;
+          }
+            // var_dump($data1);
+            downloader($access,$id,$data1);
 }
-
-
 
 
 
@@ -138,119 +151,4 @@ function albumname($fb)
 
 
 
-<?php 
 
-function creatdir($name){
-	if (file_exists($name)){
-		
-		chdir($name);
-
-	}
-	else{
-			mkdir($name);
-				chdir($name);
-			
-		}
-
-}
-
-function downloader($access,$id,$data)
-{
-
-	$dir=$access;
-
-	$album=$id;
-	if (file_exists($dir)){
-		chdir($dir);
-	}else{
-	creatdir($dir);
-		
-	}
-	if (file_exists($album)) {
-		echo $album .'is there';
-	chdir("../");
-	}else{
-		creatdir($album);
-	saveImages($data);
-	chdir("../../");
-	}
-	
-	// mkdir("test");
-	zipfolder($access);
-
-
-
-	$url="Zips/".$access.".zip";
-	echo"<a href='". $url."' download>Download Zip</a>";
-
-
-}
- function saveImages($data)
-{
-
-
-	// var_dump($data);
-	
-		foreach ($data as $key) {
-		# code...
-
-		// echo $key;
-	$image = file_get_contents($key);
-    file_put_contents(uniqid().".jpg",$image);
-	}
-}
-
-
-class FlxZipArchive extends ZipArchive 
-{
- public function addDir($location, $name) 
- {
-       $this->addEmptyDir($name);
-       $this->addDirDo($location, $name);
- } 
- private function addDirDo($location, $name) 
- {
-    $name .= '/';
-    $location .= '/';
-    $dir = opendir ($location);
-    $i=0;
-    while ($file = readdir($dir))
-    {
-        if ($file == '.' || $file == '..') continue;
-        $do = (filetype( $location . $file) == 'dir') ? 'addDir' : 'addFile';
-        $this->$do($location . $file, $name . $file);
-    	// echo "adding dir".$i++;
-
-    }
-
- } 
-}
-?>
-
-<?php
-
-
-function zipfolder($dir)
-{
-$the_folder = $dir;
-$zip_file_name = 'Zipfiles/'.$dir.'.zip';
-$za = new FlxZipArchive;
-$res = $za->open($zip_file_name, ZipArchive::CREATE);
-if($res === TRUE) 
-{
-    $za->addDir($the_folder, basename($the_folder));
-    $za->close();
-
-}
-else{
-echo 'Could not create a zip archive';
-}
-
-
-
-
-
-}
-
-
- ?>
